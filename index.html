@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru" class="page">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moon and Earth</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="body">
+  <!-- подключаем LUME -->
+  <script src="https://unpkg.com/lume@0.3.0-alpha.9/dist/global.js"></script>
+
+  <!-- создаём сцену, по умолчанию она занимает всё доступное место, в данном случае все место боди -->
+  <lume-scene id="scene" webgl>
+
+    <!-- настраиваем положение камеры -->
+    <!-- указали как далеко и как близко может двигаться камера -->
+    <!-- настроили дистанцию и угол по умолчанию -->
+    <lume-camera-rig 
+    align-point="0.5 0.5 0.5" initial-polar-angle="0" 
+    min-distance="190" max-distance="1000" 
+    initial-distance="800">
+    </lume-camera-rig>
+
+    <!-- создаём сферу с id="stars"-->
+    <!-- texture натягиваем - на нее текстуру звездного неба-->
+    <!-- receive-shadow - выключили тени, чтобы на звёзды не затенялись -->
+    <!-- has - указали, что нужно просто покрыть сферу текстурой-->
+    <!-- size - размеры нашей сферы по трём осям-->
+    <!-- align-point & mount-point - поместить шар в центр сферы -->
+    <!-- color - цвет "за" текстурой, т.к. текстура - "дырявая" = цвет звезд -->
+    <lume-sphere id="stars" 
+    texture="https://assets.codepen.io/191583/galaxy_starfield.png" 
+    receive-shadow="false" has="basic-material" 
+    sidedness="back" size="4000 4000 4000" 
+    align-point="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"
+    color="white">
+    </lume-sphere>
+
+    <!-- добавляем свет на сцену (на звезды не влияет) -->
+    <!-- создаем объект lume-node - вроде как просто объект -->
+    <lume-node align-point="0.5 0.5" size="0 0" rotation="0 -50 0">
+      <lume-node align-point="0.5 0.5" size="0 0" rotation="10 0 0">
+        <!-- непосредственно свет: яркость, расстояние до сцены, направление света, удаление от камеры итд -->
+        <lume-point-light id="light" 
+        size="0 0" position="0 0 1800" 
+        color="white" intensity="2"
+        distance="5000" shadow-map-width="2048" 
+        shadow-map-height="2048" shadow-camera-far="20000">
+        </lume-point-light>
+      </lume-node>
+    </lume-node>
+
+    <!-- создаём объект -->
+    <lume-node align-point="0.5 0.5" size="0 0 0">
+      <!-- создаем объект под сферу и позволяем вращаться в одной из плоскостей-->
+      <lume-node rotation="0 180 0">
+        <!-- мы используем текстуру, натянем ее на глобус и получим Землю, но она будет плоской, для обьёма потребуется карта рельефа и отражений - позволит свету камеры учитывать рельеф, а Земле выглядеть объемной-->
+        <!-- укажем размеры и цвет под текстурами -->
+        <lume-sphere id="earth"
+        texture="https://assets.codepen.io/191583/earthmap1k.jpg" 
+        bump-map="https://assets.codepen.io/191583/earthbump1k.jpg" 
+        specular-map="https://assets.codepen.io/191583/earthspec1k.jpg"
+        size="120 120 120" mount-point="0.5 0.5 0.5"
+        align-point="0.5 0.5" color="white">
+        </lume-sphere>
+
+        <!-- добавим облака, используя прозрачный шар с текстурой облаков -->
+        <lume-sphere id="clouds"
+        texture="https://assets.codepen.io/191583/earthclouds.png"
+        opacity="0.7" size="125 125 125"
+        align-point="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"
+        color="white">
+        </lume-sphere>
+      </lume-node>
+
+      <!-- рисуем Луну -->
+      <lume-node align-point="0.5 0.5" rotation="90 10 0">
+        <!-- описываем ёё вращение вокруг Земли -->
+        <lume-node id="moonRotation" align-point="0.5 0.5" rotation="0 0 110">
+          <lume-sphere
+          texture="https://assets.codepen.io/191583/moon.jpg"
+          position="700" size="33 33 33"
+          mount-point="0.5" color="white">
+          </lume-sphere>
+          </lume-node>
+      </lume-node>
+  </lume-scene>
+  <script src="script.js"></script>
+</body>
+</html>
